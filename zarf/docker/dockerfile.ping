@@ -1,0 +1,21 @@
+# Build the Go binary
+FROM golang:1.21 as build_ping
+ENV CGO_ENABLED 0
+ARG BUILD_REF
+
+# Copy the source code into the container.
+COPY . /service
+
+# Build the service binary
+WORKDIR /service/app/ping
+RUN go build -ldflags "-X main.build=${BUILD_REF}"
+
+# Run the Go Binary on Alpine
+FROM alpine:3.17
+ARG BUILD_DATE
+ARG BUILD_REF
+# TODO: how to read an env file from a mounted volume? and thus remove line 18
+# COPY --from=build_ping /service/.env /service/.env
+COPY --from=build_ping /service/app/ping/ping /service/ping
+WORKDIR /service 
+CMD ["./ping"]

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option go_package = "phalcon/foundation/pb";
+
+message Metric {
+    string name = 1;
+    double value = 2;
+}
+
+message OutliersRequest {
+    repeated Metric metrics = 1;
+}
+
+message OutliersResponse {
+    repeated int32 indicies = 1;
+}
+
+service Outliers {
+    rpc Detect(OutliersRequest) returns (OutliersResponse) {}
+}

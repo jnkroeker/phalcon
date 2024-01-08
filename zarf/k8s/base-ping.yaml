@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ping-pod
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: ping
+  template:
+    metadata:
+      labels: 
+        app: ping 
+    spec:
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      terminationGracePeriodSeconds: 60 
+      containers:
+      - name: ping-api
+        image: jnkroeker/ping-image:0.0.2
+        imagePullPolicy: IfNotPresent 
+        ports:
+        - name: ping-api
+          containerPort: 3000
+---
+apiVersion: v1 
+kind: Service 
+metadata:   
+  name: ping-service 
+  namespace: default 
+spec: 
+  externalTrafficPolicy: Local
+  selector: 
+    app: ping 
+  type: NodePort 
+  ports:
+  - name: ping-api 
+    port: 3000 
+    targetPort: ping-api
+    nodePort: 30080
